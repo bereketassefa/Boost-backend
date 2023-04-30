@@ -38,6 +38,10 @@ const studentSchema = new mongoose.Schema({
     default: "student",
     enum: ["student"],
   },
+  regStatus: {
+    type: String,
+    enum: ["notstarted", "enrolled", "finished", "failed"],
+  },
 });
 
 const Student = mongoose.model("Student", studentSchema);
