@@ -23,12 +23,14 @@ year = {
 };
 
 function years(field) {
-  console.log(field);
-  if (field in fields3) {
+  if (fields3.includes(field)) {
+    console.log("field 3");
     return year;
-  } else if (field in fields4) {
+  } else if (fields4.includes(field)) {
+    console.log("field 4");
     return { ...year, 41: options[0], 42: options[0] };
   } else {
+    console.log("field 5");
     return {
       ...year,
       41: options[0],
@@ -123,6 +125,7 @@ router.post("/signup", async (req, res) => {
     fieldOfStudy: req.body.fieldOfStudy,
     isRegistered: years(req.body.fieldOfStudy),
     regStatus: "notstarted",
+    advisor: "648444b27adfa6ab0edcd238",
   });
   let result = await student.save();
 
@@ -132,7 +135,7 @@ router.post("/signup", async (req, res) => {
   );
 
   res
-    .header("x-auth-token", token)
+    // .header("x-auth-token", token)
     .send({ email: result.email, _id: result._id });
 });
 

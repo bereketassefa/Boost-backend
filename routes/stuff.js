@@ -8,6 +8,11 @@ const adminMiddleware = require("../middleware/admin");
 
 const router = express.Router();
 
+router.get("/", [auth, adminMiddleware], async (req, res) => {
+  const user = await Stuff.find().select("-password -__v");
+  return res.send(user);
+});
+
 router.post("/", [auth, adminMiddleware], async (req, res) => {
   const { error } = validateStuff(req.body);
   if (error) return res.status(400).send(error.details[0].message);

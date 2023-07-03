@@ -7,16 +7,34 @@ const auth = require("../middleware/auth");
 const stuffMiddleware = require("../middleware/stuff");
 const { Student } = require("../models/student");
 const Joi = require("joi");
+const { Stuff } = require("../models/Stuff");
 Joi.objectId = require("joi-objectid")[Joi];
 
 const router = express.Router();
+
+router.get("/:id", [auth, stuffMiddleware], async (req, res) => {
+  console.log(req.params.id);
+  const result = await Clearance.find({ clearanceType: req.user.role })
+    // .select("nameissue")
+    .populate("studId")
+    .limit(10)
+    .skip(10 * (req.params.id - 1));
+
+  const count = await Clearance.find({ clearanceType: req.user.role });
+  const name = await Stuff.find({ _id: req.user._id }).select("fullName");
+
+  return res.send([result, { val: count.length, name: name }]);
+  // .sort({
+  //     name: 'asc'
+  // })
+});
 
 router.post("/", [auth, stuffMiddleware], async (req, res) => {
   const { error } = validateClearance(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const user = await Student.findOne({ email: req.body.email });
-  if (!user) return res.send("email does't exist in the database");
+  if (!user) return res.json("email does't exist in the database");
 
   const userid = user._id;
 

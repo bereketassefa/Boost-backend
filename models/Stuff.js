@@ -2,7 +2,15 @@ const mongoose = require("mongoose");
 
 const Joi = require("joi");
 
-options = ["admin", "sport", "cafe", "faculty", "library"];
+options = [
+  "admin",
+  "sport",
+  "cafe",
+  "faculty",
+  "library",
+  "advisor",
+  "registrar",
+];
 
 const stuffSchema = new mongoose.Schema({
   fullName: {
@@ -21,6 +29,9 @@ const stuffSchema = new mongoose.Schema({
     maxlength: 1024,
   },
   role: { type: String, enum: options },
+  field: {
+    type: String,
+  },
 });
 
 const Stuff = mongoose.model("Stuff", stuffSchema);
@@ -30,7 +41,8 @@ const validateStuff = (obj) => {
     fullName: Joi.string().min(5).max(30).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(5).required(),
-    role: Joi.string().min(4).max(7).required(),
+    role: Joi.string().min(4).required(),
+    field: Joi.string(),
   });
 
   return schema.validate(obj);

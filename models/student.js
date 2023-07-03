@@ -42,6 +42,15 @@ const studentSchema = new mongoose.Schema({
     type: String,
     enum: ["notstarted", "enrolled", "finished", "failed"],
   },
+  advisor: {
+    type: String,
+    ref: "Clearance",
+    required: true,
+  },
+  registrarClearance: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Student = mongoose.model("Student", studentSchema);

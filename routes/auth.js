@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
   let student = await Student.findOne({ email: req.body.email });
   let stuff = await Stuff.findOne({ email: req.body.email });
   if (!student && !stuff)
-    return res.status(400).send("Invalid email or password");
+    return res.status(400).json("Invalid email or password");
 
   const validPassword = await bcrypt.compare(
     req.body.password,
@@ -37,7 +37,10 @@ router.post("/", async (req, res) => {
   }
 
   const token = jwt.sign(response, process.env.jwt_secret);
-  res.status(200).header("x-auth-token", token).send(response);
+  res
+    .status(200)
+    .header("x-auth-token", token)
+    .send({ ...response, token: token });
 });
 
 function validate(user) {
@@ -45,7 +48,7 @@ function validate(user) {
     email: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(5).max(1024).required(),
   });
-
+  console.log(Schema.validate(user));
   return Schema.validate(user);
 }
 module.exports = router;
