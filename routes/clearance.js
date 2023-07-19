@@ -14,7 +14,10 @@ const router = express.Router();
 
 router.get("/:id", [auth, stuffMiddleware], async (req, res) => {
   console.log(req.params.id);
-  const result = await Clearance.find({ clearanceType: req.user.role })
+  const result = await Clearance.find({
+    clearanceType: req.user.role,
+    status: true,
+  })
     // .select("nameissue")
     .populate("studId")
     .limit(10)
@@ -43,6 +46,7 @@ router.post("/", [auth, stuffMiddleware], async (req, res) => {
     clearanceType: req.user.role,
     issue: req.body.issue,
     issueDetail: req.body.issueDetail,
+    status: true,
   });
   let result = await stuff.save();
 
@@ -54,7 +58,10 @@ router.delete("/:id", [auth, stuffMiddleware], async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id))
     return res.status(400).send("invalid id");
 
-  const result = await Clearance.deleteOne({ _id: req.params.id });
+  const result = await Clearance.updateOne(
+    { _id: req.params.id },
+    { status: false }
+  );
   return res.send(result);
 });
 

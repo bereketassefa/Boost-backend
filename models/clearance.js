@@ -21,6 +21,10 @@ const clearance = new mongoose.Schema({
   issueDetail: {
     type: String,
   },
+  status:{
+    type: Boolean,
+    required: true
+  }
 });
 
 const Clearance = mongoose.model("Clearance", clearance);

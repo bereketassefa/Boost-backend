@@ -13,7 +13,7 @@ router.get("/", [auth, adminMiddleware], async (req, res) => {
   return res.send(user);
 });
 
-router.post("/", [auth, adminMiddleware], async (req, res) => {
+router.post("/", async (req, res) => {
   const { error } = validateStuff(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 

@@ -24,7 +24,7 @@ router.get("/", [auth, student], async (req, res) => {
   response.regStatus = await checkIfRegistered(req.user._id);
   console.log(await checkIfRegistered(req.user._id));
   if (response.regStatus === "notstarted") {
-    response.remainingTime = new Date(2023, 6, 1).getTime();
+    response.remainingTime = new Date(2024, 9, 1).getTime();
   }
   const result = await checkClearanceStatus(req.user._id);
 
@@ -42,7 +42,7 @@ async function checkIfRegistered(id) {
   return result.regStatus;
 }
 async function checkClearanceStatus(id) {
-  const result = await Clearance.find({ studId: id });
+  const result = await Clearance.find({ studId: id, status: true });
 
   return result;
 }

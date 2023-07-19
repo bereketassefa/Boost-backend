@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const { Student, validateStudent } = require("../models/student");
+const { Stuff } = require("../models/Stuff");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const student = require("../middleware/student");
@@ -42,6 +43,45 @@ function years(field) {
 }
 
 const router = express.Router();
+
+async function getid(field) {
+  const result = await Stuff.aggregate([
+    { $match: { field: field } },
+    {
+      $addFields: {
+        convertedId: { $toString: "$_id" },
+      },
+    },
+    {
+      $lookup: {
+        from: "students",
+        localField: "convertedId",
+        foreignField: "advisor",
+        as: "advisor",
+      },
+    },
+  ]);
+
+  console.log(result);
+  if (result.length === 0) {
+    return "64a3d42cb23d23fc3a3f0b86";
+  }
+  let newres = result.map((each) => {
+    return {
+      id: each._id,
+      total: each.advisor.length,
+    };
+  });
+  let min = newres[0].total;
+  let id = "";
+  newres.forEach((each) => {
+    if (each.total <= min) {
+      min = each.total;
+      id = each.id;
+    }
+  });
+  return id;
+}
 
 //list of registered students
 router.get("/registered", async (req, res) => {
@@ -117,6 +157,7 @@ router.post("/signup", async (req, res) => {
 
   const salt = await bcrypt.genSalt(5);
   const hashed = await bcrypt.hash(req.body.password, salt);
+  let advisorid = await getid(req.body.fieldOfStudy);
 
   const student = Student({
     fullName: req.body.fullName,
@@ -125,7 +166,7 @@ router.post("/signup", async (req, res) => {
     fieldOfStudy: req.body.fieldOfStudy,
     isRegistered: years(req.body.fieldOfStudy),
     regStatus: "notstarted",
-    advisor: "648444b27adfa6ab0edcd238",
+    advisor: advisorid,
   });
   let result = await student.save();
 
